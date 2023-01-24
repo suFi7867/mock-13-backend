@@ -5,6 +5,7 @@ const { Router } = require("express");
 const UserModel = require("./user.model");
 
 const app = Router();
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -34,8 +35,7 @@ app.post("/login", async (req, res) => {
  
    const User = await UserModel.findOne({ email });
    let username = User.username
-   let date = new Date().toLocaleDateString("de-DE");
-   let time =  new Date().toLocaleTimeString();
+  let role = User.role
    
   // console.log(User)
   // if (!User) return res.status(404).send("User Not Found");
@@ -68,12 +68,11 @@ app.post("/login", async (req, res) => {
          }
        );
 
-       console.log(date
-        ,time)
+       
      
        return res
          .status(200)
-         .send({ message: "Login success", token, refresh_token, email,username, time : `Date : ${date} , Time : ${time}` });
+         .send({ message: "Login success", token, refresh_token, email,username, role });
      } else {
        return res.status(401).send({ message: "Authentication Failed" });
      }
@@ -91,7 +90,9 @@ app.post("/signup", async (req, res) => {
     username,
   } = req.body;
 
-  console.log(req.body)
+
+
+
   
 
   if (!email || !password || !username ) {
@@ -110,10 +111,13 @@ app.post("/signup", async (req, res) => {
         return res.status(403).send({ message: "Connection has failed" });
       }
 
+      let role = email.includes("@masaischool.com") ? "Admin" : "User"
+
       const user = await UserModel({
         email,
         password: hash,
-        username
+        username,
+        role
       });
 
       await user.save();
@@ -129,46 +133,6 @@ app.post("/signup", async (req, res) => {
   
 });
 
-// Calculate 
-
-
-
-app.post("/calculate", async (req, res) => {
-  const {
-    InvestmentAmount, 
-    TimePeriod,
-  } = req.body;
-
-  console.log(req.body)
- 
-  try {
-
-    let P = InvestmentAmount ;
-    let i = 7.1 / 100 ;
-    let n = TimePeriod ;
-
-    let  MaturityValue = (P * (Math.pow(1 + i, n) - 1) / i).toFixed();
-
-    // Total Investment Amount = Annual Instalment Amount * Total No. of Years
-    let TOTALInvestmentAmount = (n*P).toFixed()
-
-   // Total Interest Gained = Total Maturity Value - Total Investment Amount
-   let InterestGained = (MaturityValue - TOTALInvestmentAmount).toFixed()
-   
-   //console.log(MaturityValue,  TOTALInvestmentAmount, InterestGained)
-    
-    
-      return res
-        .status(201)
-        .send({ message: "Calculate success", MaturityValue, TOTALInvestmentAmount, InterestGained  });
-    
-    
-  } catch (er) {
-
-    return res.status(404).send(er.message);
-  }
-  
-});
 
 
 module.exports = app;
