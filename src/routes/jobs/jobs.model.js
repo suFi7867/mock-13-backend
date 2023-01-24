@@ -12,5 +12,5 @@ jobrole :{type:String},
 
 },{versionKey:false})
 
-const Jobs = model("jobs",JobsSchema)
+const Jobs = model("job",JobsSchema)
 module.exports=Jobs

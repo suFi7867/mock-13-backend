@@ -8,6 +8,7 @@ const app = Router();
 
 
 app.get("/", async (req, res) => {
+
   try {
     let data = await Jobs.find();
     return res.status(200).send(data);
@@ -20,16 +21,46 @@ app.get("/", async (req, res) => {
 // Delete 
 
 app.delete("/", async (req, res) => {
-  console.log(req.body)
+
   try {
 
     let exists = await Jobs.findOneAndDelete({
-      id: +req.body.id,
+      _id: req.body.id,
     });
     
-    console.log(exists,typeof +req.body.id, req.body.name);
+    console.log(exists,typeof +req.body.id);
 
     res.status(200).send("Product deleted successfully");
+
+  } catch (e) {
+    res.send(e.massage);
+  }
+});
+
+
+app.post("/", async (req, res) => {
+  const {
+    name,
+    location, 
+    contract,
+    jobrole
+  } = req.body;
+
+  try {
+
+    const job = await Jobs({
+      name,
+      location,
+      contract,
+      jobrole
+    });
+
+    await job.save();
+    return res
+    .status(200)
+    .send({ message: "Product Added successfully"});
+    
+    
   } catch (e) {
     res.send(e.massage);
   }
