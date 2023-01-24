@@ -6,6 +6,7 @@ const cors = require("cors");
 const connect = require("./config/db");
 
 const userRouter = require("./routes/user/user.router");
+const jobsRouter = require("./routes/jobs/jobs.router");
 
 const PORT = process.env.PORT || 8080;
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/user", userRouter);
+app.use("/jobs", jobsRouter);
 
 app.get("/", async (req, res) => {
     res.status(200).send("BASE PAGE");
